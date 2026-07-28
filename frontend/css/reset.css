@@ -1,0 +1,176 @@
+/*
+========================================================================
+RESET.CSS
+
+Project: ReflexArena
+Description:
+    Provides a consistent styling baseline across browsers by removing
+    default browser styles and applying sensible defaults.
+
+Author: Shallon Said
+========================================================================
+*/
+
+/* ==========================================================================
+   Box Sizing
+   ========================================================================== */
+
+/*
+ * Include padding and borders within an element's declared width and height.
+ * This makes layouts much easier to reason about.
+ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Document Defaults
+   ========================================================================== */
+
+/*
+ * Enable smooth scrolling for in-page navigation.
+ */
+html {
+    scroll-behavior: smooth;
+}
+
+/*
+ * Remove default body margin.
+ * Ensure the body occupies at least the full viewport height.
+ * Improve text rendering.
+ */
+body {
+    margin: 0;
+    min-height: 100vh;
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================================
+   Typography Reset
+   ========================================================================== */
+
+/*
+ * Remove default spacing from common text elements.
+ * We will control spacing using our design system.
+ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+/*
+ * Remove default list styles.
+ */
+ul,
+ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* ==========================================================================
+   Images & Media
+   ========================================================================== */
+
+/*
+ * Make images responsive by default.
+ */
+img,
+picture {
+    display: block;
+    max-width: 100%;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+/*
+ * Ensure form controls inherit typography.
+ */
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+/*
+ * Remove default spacing.
+ */
+button,
+input,
+textarea,
+select {
+    margin: 0;
+}
+
+/*
+ * Buttons should indicate interactivity.
+ */
+button {
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/*
+ * Links inherit surrounding text color by default.
+ */
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+/*
+ * Remove gaps between table cells.
+ */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+/*
+ * Respect users who prefer reduced motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+}
