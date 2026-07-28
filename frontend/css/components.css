@@ -83,6 +83,7 @@ button:focus-visible {
     font-size: var(--font-size-lg);
 }
 
+
 table {
     width: 100%;
 }
@@ -117,4 +118,30 @@ tbody tr:hover {
 
 .score-row:last-child {
     margin-bottom: 0;
+}
+
+.target {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--color-danger);
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        background-color var(--transition-fast);
+}
+
+.target:hover {
+    transform: scale(1.08);
+}
+
+.target:active {
+    transform: scale(0.95);
+}
+
+.target:focus-visible {
+    outline: 3px solid rgba(239, 68, 68, 0.3);
+    outline-offset: 3px;
 }
