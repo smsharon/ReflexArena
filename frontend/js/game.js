@@ -1,35 +1,39 @@
+import { GAME_CONFIG } from "./config.js";
+import { TargetManager } from "./targetManager.js";
 import { Timer } from "./timer.js";
-import { randomInteger } from "./utils.js";
-import {
-    clearArena,
-    createTarget,
-    getUIElements,
-    positionTarget,
-    setStartButtonDisabled,
-    showArenaMessage,
-    showGameOver,
-    updateScore,
-    updateTimer
-} from "./ui.js";
 
-const GAME_DURATION = 30;
-const TARGET_SIZE = 70;
+import {
+    getUIElements,
+    updateScore,
+    updateTimer,
+    showArenaMessage,
+    setStartButtonDisabled,
+    clearArena,
+    showGameOver
+} from "./ui.js";
 
 export class Game {
     constructor() {
         this.ui = getUIElements();
 
-        this.state = {
-            playerName: "",
-            score: 0,
-            isRunning: false,
-            currentTarget: null
-        };
+        this.score = 0;
+        this.running = false;
+
+        this.lastFrame = 0;
+        this.animationId = null;
+
+        this.targetManager = null;
 
         this.timer = new Timer({
-            duration: GAME_DURATION,
-            onTick: (seconds) => updateTimer(seconds),
-            onComplete: () => this.end()
+            duration: GAME_CONFIG.GAME_DURATION,
+
+            onTick: (seconds) => {
+                updateTimer(seconds);
+            },
+
+            onComplete: () => {
+                this.win();
+            }
         });
     }
 
@@ -37,72 +41,107 @@ export class Game {
         const playerName = this.ui.playerNameInput.value.trim();
 
         if (!playerName) {
-            alert("Please enter your name before starting the game.");
-            this.ui.playerNameInput.focus();
+            alert("Please enter your name.");
             return;
         }
 
-        this.state.playerName = playerName;
-        this.state.score = 0;
-        this.state.isRunning = true;
+        this.playerName = playerName;
+
+        this.score = 0;
 
         updateScore(0);
-        updateTimer(GAME_DURATION);
+        this.timer.reset();
+
+        clearArena();
 
         setStartButtonDisabled(true);
 
-        clearArena();
+        this.running = true;
 
-        this.timer.reset();
+        this.targetManager = new TargetManager(
+            this.ui.arena,
+            this.handleTargetHit.bind(this),
+            this.handleTargetMiss.bind(this)
+        );
+
+        this.targetManager.spawnWave();
+
         this.timer.start();
 
-        this.spawnTarget();
+        this.lastFrame = performance.now();
+
+        this.animationId = requestAnimationFrame(
+            this.gameLoop.bind(this)
+        );
     }
 
-    spawnTarget() {
-        if (!this.state.isRunning) {
+    gameLoop(timestamp) {
+        if (!this.running) {
             return;
         }
 
-        clearArena();
+        const deltaTime = (timestamp - this.lastFrame) / 1000;
 
-        const target = createTarget(() => this.handleTargetClick());
+        this.lastFrame = timestamp;
 
-        this.state.currentTarget = target;
+        this.targetManager.update(deltaTime);
 
-        const arenaWidth = this.ui.arena.clientWidth;
-        const arenaHeight = this.ui.arena.clientHeight;
-
-        const left = randomInteger(0, arenaWidth - TARGET_SIZE);
-        const top = randomInteger(0, arenaHeight - TARGET_SIZE);
-
-        positionTarget(target, left, top);
+        this.animationId = requestAnimationFrame(
+            this.gameLoop.bind(this)
+        );
     }
 
-    handleTargetClick() {
-        if (!this.state.isRunning) {
+    handleTargetHit() {
+        this.score++;
+
+        updateScore(this.score);
+    }
+
+    handleTargetMiss() {
+        this.lose();
+    }
+
+    win() {
+        if (!this.running) {
             return;
         }
 
-        this.state.score++;
+        this.end(
+            `Congratulations ${this.playerName}!
 
-        updateScore(this.state.score);
+You survived the full ${GAME_CONFIG.GAME_DURATION} seconds.
 
-        this.spawnTarget();
+Final Score: ${this.score}`
+        );
     }
 
-    end() {
-        this.state.isRunning = false;
+    lose() {
+        if (!this.running) {
+            return;
+        }
+
+        this.end(
+            `Game Over!
+
+${this.playerName},
+
+A target reached the bottom.
+
+Final Score: ${this.score}`
+        );
+    }
+
+    end(message) {
+        this.running = false;
+
+        cancelAnimationFrame(this.animationId);
 
         this.timer.stop();
 
-        clearArena();
-
-        showGameOver(
-            this.state.playerName,
-            this.state.score
-        );
+        this.targetManager.clear();
 
         setStartButtonDisabled(false);
+
+        showArenaMessage(message);
     }
 }
