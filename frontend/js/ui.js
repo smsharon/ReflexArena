@@ -63,7 +63,7 @@ export function showArenaMessage(message) {
     clearArena();
 
     const messageElement = createElement("p", {
-        className: "text-muted text-center",
+        className: "arena-message",
         text: message
     });
 
@@ -110,6 +110,12 @@ export function positionTarget(target, left, top) {
  */
 export function showGameOver(playerName, score) {
     showArenaMessage(
-        `${playerName}, your final score is ${score}. Click Start Game to play again.`
+    `Game Over!
+
+    Well done, ${playerName}!
+
+    Final Score: ${score}
+
+    Click Start Game to play again.`
     );
 }
